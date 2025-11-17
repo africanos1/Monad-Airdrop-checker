@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""
+Monad Airdrop Eligibility Checker
+Checks if a wallet address is eligible for the MON airdrop via official API.
+Based on Monad's claim portal (live as of Oct 14, 2025).
+
+Author: @bullishether_
+Date:   2025-11-17
+DYOR: Not financial advice. Use official portal to claim.
+"""
+
+import json
+import sys
+from typing import Dict, Any, Optional
+import requests
+
+# ========================= CONFIG =========================
+CLAIM_PORTAL_URL = "https://claim.monad.xyz/api/check-eligibility"  # Official endpoint (inferred from portal)
+WALLET_ADDRESS = "0xYourWalletAddressHere"  # ← Replace with your EVM wallet (e.g., MetaMask)
+
+# Optional: API key if needed (not required for public checks)
+API_KEY = None  # Set if portal requires auth
+
+HEADERS = {
+    "Content-Type": "application/json",
+    "User-Agent": "MonadAirdropChecker/1.0 (+https://x.com/bullishether_)"
+}
+
+# ======================= HELPERS =========================
+def check_eligibility(wallet: str) -> Optional[Dict[str, Any]]:
+    """Send request to claim portal API and return eligibility data."""
+    payload = {
+        "wallet": wallet.lower(),  # EVM addresses are case-insensitive
+        "network": "monad-mainnet",  # Or "testnet" if checking pre-claim
+        "timestamp": "2025-09-30T23:59:00Z"  # Snapshot date
+    }
+    if API_KEY:
+        payload["api_key"] = API_KEY
+
+    try:
+        resp = requests.post(CLAIM_PORTAL_URL, headers=HEADERS, json=payload, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+        if "error" in data:
+            raise RuntimeError(f"API Error: {data['error']}")
+        return data.get("result")
+    except requests.RequestException as e:
+        print(f"❌ Connection failed: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        sys.exit(1)
+
+
+def print_eligibility(info: Dict[str, Any]):
+    """Pretty-print eligibility results."""
+    eligible = info.get("eligible", False)
+    allocation = info.get("allocation", 0)
+    tracks = info.get("tracks", [])
+
+    if eligible:
+        print("🎉 CONGRATS! You're eligible for the MON airdrop!")
+        print(f"   Allocated MON: {allocation:,}")
+        print(f"   Qualifying Tracks: {', '.join(tracks)}")
+        print(f"   Next: Claim at https://claim.monad.xyz before Nov 3, 2025!")
+    else:
+        print("😔 Not eligible this time. Boost chances with more ecosystem activity!")
+        print(f"   Reason: {info.get('reason', 'No matching snapshot data')}")
+        print("   Tip: Check testnet txs on explorer.monad.xyz")
+
+
+# ========================= MAIN =========================
+def main():
+    if WALLET_ADDRESS == "0xYourWalletAddressHere":
+        print("❌ Update WALLET_ADDRESS in script with your EVM wallet!")
+        sys.exit(1)
+
+    print("🔍 Checking Monad airdrop eligibility...")
+    print(f"   Wallet: {WALLET_ADDRESS}\n")
+
+    eligibility = check_eligibility(WALLET_ADDRESS)
+    if eligibility:
+        print_eligibility(eligibility)
+    else:
+        print("❌ No data returned. Try the official portal manually.")
+
+    print("\n📈 Pro Tip: Run multiple wallets? Loop over a list in the script!")
+
+if __name__ == "__main__":
+    main()
