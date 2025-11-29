@@ -16,7 +16,7 @@ import requests
 
 # ========================= CONFIG =========================
 CLAIM_PORTAL_URL = "https://claim.monad.xyz/api/check-eligibility"  # Official endpoint (inferred from portal)
-WALLET_ADDRESS = "0xYourWalletAddressHere"  # ← Replace with your EVM wallet (e.g., MetaMask)
+WALLET_ADDRESS =  0x7E26816299dab13d651229f5Ee7FC360DebC6ea5 # ← Replace with your EVM wallet (e.g., MetaMask)
 
 # Optional: API key if needed (not required for public checks)
 API_KEY = None  # Set if portal requires auth
@@ -71,14 +71,14 @@ def print_eligibility(info: Dict[str, Any]):
 
 # ========================= MAIN =========================
 def main():
-    if WALLET_ADDRESS == "0xYourWalletAddressHere":
-        print("❌ Update WALLET_ADDRESS in script with your EVM wallet!")
+    if WALLET_ADDRESS == :0x7E26816299dab13d651229f5Ee7FC360DebC6ea5
+        print("❌ Update  0x7E26816299dab13d651229f5Ee7FC360DebC6ea5 in script with your EVM wallet!")
         sys.exit(1)
 
     print("🔍 Checking Monad airdrop eligibility...")
-    print(f"   Wallet: {WALLET_ADDRESS}\n")
+    print(f"   Wallet: 0x7E26816299dab13d651229f5Ee7FC360DebC6ea5 \n")
 
-    eligibility = check_eligibility(WALLET_ADDRESS)
+    eligibility = check_eligibility 0x7E26816299dab13d651229f5Ee7FC360DebC6ea5
     if eligibility:
         print_eligibility(eligibility)
     else:
